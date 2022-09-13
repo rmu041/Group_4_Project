@@ -65,4 +65,18 @@ Group_4_data <-
   Group_4_data %>% 
   arrange(Group_4_data, id)
 
+##Join additional data
+Group_4_additional <- read.csv(here("DATA_copy", "exam_joindata_Johannacopy.txt"))
+view(Group_4_additional)
+
+##Separate additional data columns
+Group_4_additional <- read_delim(here("DATA_copy", "exam_joindata_Johannacopy.txt"), delim = "\t")
+
+##Join additional dataset to main dataset - THIS DIDNT WORK
+Group_4_data <- 
+  Group_4_data %>% 
+  left_join(Group_4_data, Group_4_additional)
+
+merge(data.frame(Group_4_data, row.names=NULL), data.frame(Group_4_additional, row.names=NULL), 
+      by = 0, all = TRUE) ## THIS ALSO DIDNT WORK
 
