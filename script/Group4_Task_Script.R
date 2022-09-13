@@ -44,10 +44,25 @@ Group_4_data <-
 ##Change column names that contain spaces or start with numbers (or characters?)
 Group_4_data <- 
 Group_4_data %>% 
-  rename(insulin_microiu_ml = `insulin microiu ml`,
+  rename(id = `subject`,
+    insulin_microiu_ml = `insulin microiu ml`,
          diabetes_5y = `5y diabetes`,
          measured_variable = `measured variable`,
          value = `.value`
          )
 
-##Set the order of columns as required
+##Set the order of columns as required (id-hospital-age, the rest)
+Group_4_data <- 
+  Group_4_data %>% 
+  select(id, hospital, age, everything()) ##select() picks variables based on their names, everything() selects all variables
+
+##Arrange ID column of your dataset in order of increasing number
+Group_4_data <- 
+  Group_4_data %>% 
+  mutate_at(c("id"), as.numeric) #change characters to numeric otherwise the order is 1 10 11 2 21 22
+
+Group_4_data <- 
+  Group_4_data %>% 
+  arrange(Group_4_data, id)
+
+
