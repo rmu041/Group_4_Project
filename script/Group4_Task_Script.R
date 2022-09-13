@@ -7,7 +7,7 @@ library(tidyverse)
 
 ## Loading data to environment using read.csv ##
 
-Group_4_data <- read_delim(here("data", "exam_nontidy - kopia.txt"), delim = "\t")
+Group_4_data <- read_delim(here("data", "exam_nontidy - copy.txt"), delim = "\t")
 
 #separate pregnancy and age
 Group_4_data <- 
@@ -25,5 +25,7 @@ Group_4_data <-
 
 # Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
-  pivot_wider(names_from = "measured variable",
+  pivot_wider(names_from = "measured_variable",
               values_from = "value")
+
+
