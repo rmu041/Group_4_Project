@@ -97,6 +97,20 @@ Group_4_joined_data %>%
 
 
 #Day 7----
+#Does the level of glucose and insulin depend on each other?
+Glucose_insulin_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = insulin_microiu_pmol_l) +
+  geom_point() +
+  xlab("Glucose level (mg/dL)") +
+  ylab("Insulin microIU/mL") +
+  labs(title = "Glucose and insulin at 2 hours",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+
+# The plot illustrates the relationship between plasma glucose concentration serum insulin at 2 hours after administration of an oral glucose tolerance test. Visually, there seems to appear a tendency toward a higher insulin level with higher glucose level. There are many missing values for insulin (375 out of 768), which could lead to a skewed outcome.
+
+
 
 # Does the level of glucose and blood pressure depend on each other?
 glucose_bp <-
