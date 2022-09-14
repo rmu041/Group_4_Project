@@ -98,3 +98,15 @@ Group_4_joined_data %>%
 
 #Day 7----
 
+# Does the level of glucose and blood pressure depend on each other?
+glucose_bp <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = dbp_mm_hg) +
+  geom_point() +
+  xlab("Glucose level (mg/dl)") +
+  ylab("Blood pressure (mm/hg)") +
+  labs(title = "Relationship between glucose level and blood pressure",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+glucose_bp
+# Visually, it does not look like there is a relationship between level of glucose and blood pressure
