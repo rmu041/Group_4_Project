@@ -30,6 +30,16 @@ Group_4_data <-
   Group_4_data %>%
   distinct()
 
+##Change column names that contain spaces or start with numbers (or characters?)----
+Group_4_data <- 
+Group_4_data %>% 
+  rename(id = `subject`,
+    insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5y = `5y diabetes`,
+         measured_variable = `measured variable`,
+         value = `.value`
+         )
+
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
   pivot_wider(names_from = "measured_variable",
@@ -48,16 +58,6 @@ Group_4_data <-
   mutate(pregnancy_num = as.numeric(pregnancy_num),
          age = as.numeric(age),
          id = as.numeric(id))
-
-##Change column names that contain spaces or start with numbers (or characters?)----
-Group_4_data <- 
-Group_4_data %>% 
-  rename(id = `subject`,
-    insulin_microiu_ml = `insulin microiu ml`,
-         diabetes_5y = `5y diabetes`,
-         measured_variable = `measured variable`,
-         value = `.value`
-         )
 
 ## Create set of columns for: glucose_mg_dl>120, insulin in units pmol/L ----
 ## diabetes_5y as 0/1, multiplication of age and pregnancy_num
