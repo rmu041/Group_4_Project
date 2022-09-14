@@ -32,8 +32,8 @@ Group_4_data <-
 
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
-  pivot_wider(names_from = "measured_variable",
-              values_from = "value")
+  pivot_wider(names_from = "measured variable",
+              values_from = ".value")
 
 #Day 6----
 
@@ -78,13 +78,12 @@ Group_4_joined_data <-
   Group_4_data %>%
   left_join(Joining_data, by = "id")
 
-
 ##Explore data again after adjustments ----
-summary(Group_4_data)
-glimpse(Group_4_data)
+summary(Group_4_joined_data)
+glimpse(Group_4_joined_data)
 skimr::skim(Group_4_data)
-naniar::gg_miss_var(Group_4_data)
-naniar::gg_miss_var(Group_4_data, facet = five_year_diabetes_classifier)
+naniar::gg_miss_var(Group_4_joined_data)
+naniar::gg_miss_var(Group_4_joined_data, facet = five_year_diabetes_classifier)
 
 ##Comment on missing data?----
 #PROVIDE ANSWER HERE
