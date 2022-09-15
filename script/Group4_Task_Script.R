@@ -32,6 +32,7 @@ Group_4_data <-
 
 ##Change column names that contain spaces or start with numbers (or characters?)----
 Group_4_data <- 
+<<<<<<< HEAD
   Group_4_data %>% 
   rename(id = `subject`,
          insulin_microiu_ml = `insulin microiu ml`,
@@ -39,6 +40,15 @@ Group_4_data <-
          measured_variable = `measured variable`,
          value = `.value`
   )
+=======
+Group_4_data %>% 
+  rename(id = `subject`,
+    insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5y = `5y diabetes`,
+         measured_variable = `measured variable`,
+         value = `.value`
+         )
+>>>>>>> 5e9f7a508ef54c3ee5f0b3dad523b851f20d8c8d
 
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
@@ -97,4 +107,45 @@ Group_4_joined_data %>%
 
 
 #Day 7----
+#Does the level of glucose and insulin depend on each other?
+Glucose_insulin_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = insulin_microiu_pmol_l) +
+  geom_point() +
+  xlab("Glucose level (mg/dL)") +
+  ylab("Insulin microIU/mL") +
+  labs(title = "Glucose and insulin at 2 hours",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+Glucose_insulin_plot
 
+# The plot illustrates the relationship between plasma glucose concentration serum insulin at 2 hours after administration of an oral glucose tolerance test. Visually, there seems to appear a tendency toward a higher insulin level with higher glucose level. There are many missing values for insulin (375 out of 768), which could lead to a skewed outcome.
+
+#Does the level of glucose and insulin depend on each other, when stratifying by outcome (diabetes_5y)?
+Glucose_insulin_plot_stratified <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = insulin_microiu_pmol_l) +
+  geom_point() +
+  facet_wrap(facets = vars(diabetes_5y_classifier)) +
+  geom_smooth(method = "lm") +
+  xlab("Glucose level (mg/dL)") +
+  ylab("Insulin microIU/mL") +
+  labs(title = "Glucose and insulin at 2 hours",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+Glucose_insulin_plot_stratified
+#As without the stratification, there is a tendency to higher insulin with higher glucose. However, there are fewer observations for those with diabetes vs those without, which makes the results for those with diabetes less reliable.
+
+
+# Does the level of glucose and blood pressure depend on each other?
+glucose_bp <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = dbp_mm_hg) +
+  geom_point() +
+  xlab("Glucose level (mg/dl)") +
+  ylab("Blood pressure (mm/hg)") +
+  labs(title = "Relationship between glucose level and blood pressure",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+glucose_bp
+# Visually, it does not look like there is a relationship between level of glucose and blood pressure
