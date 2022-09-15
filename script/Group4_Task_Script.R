@@ -30,10 +30,20 @@ Group_4_data <-
   Group_4_data %>%
   distinct()
 
+##Change column names that contain spaces or start with numbers (or characters?)----
+Group_4_data <- 
+  Group_4_data %>% 
+  rename(id = `subject`,
+         insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5y = `5y diabetes`,
+         value = `.value`,
+         measured_variable = `measured variable`,
+  )
+
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
-  pivot_wider(names_from = "measured variable",
-              values_from = ".value")
+  pivot_wider(names_from = "measured_variable",
+              values_from = "value")
 
 #Day 6----
 
@@ -48,16 +58,6 @@ Group_4_data <-
   mutate(pregnancy_num = as.numeric(pregnancy_num),
          age = as.numeric(age),
          id = as.numeric(id))
-
-##Change column names that contain spaces or start with numbers (or characters?)----
-Group_4_data <- 
-Group_4_data %>% 
-  rename(id = `subject`,
-    insulin_microiu_ml = `insulin microiu ml`,
-         diabetes_5y = `5y diabetes`,
-         measured_variable = `measured variable`,
-         value = `.value`
-         )
 
 ## Create set of columns for: glucose_mg_dl>120, insulin in units pmol/L ----
 ## diabetes_5y as 0/1, multiplication of age and pregnancy_num
@@ -83,7 +83,7 @@ summary(Group_4_joined_data)
 glimpse(Group_4_joined_data)
 skimr::skim(Group_4_data)
 naniar::gg_miss_var(Group_4_joined_data)
-naniar::gg_miss_var(Group_4_joined_data, facet = five_year_diabetes_classifier)
+naniar::gg_miss_var(Group_4_joined_data, facet = diabetes_5y_classifier)
 
 ##Comment on missing data?----
 #PROVIDE ANSWER HERE
@@ -96,4 +96,32 @@ Group_4_joined_data %>%
 
 
 #Day 7----
+
+devtools::install_github("jromanowska/RMED-ggplot-tutorial")
+
+
+##BMI and triceps_mm values association----
+Group_4_joined_data %>% 
+  filter(triceps_mm < 90) %>% 
+  ggplot(aes(x = bmi,
+             y = triceps_mm)) +
+  geom_point() +
+  geom_smooth(method = lm,
+              se = T) +
+  labs(x = "bmi (kg/m2)",
+       y = "triceps (mm)",
+       title = "Relationship between bmi and triceps skin fold thickness") +
+  theme_minimal()
+
+
+#Day 8----
+  
+## glucose_mg_dl impact on outcome
+
+summary(Group_4_joined_data)
+
+Group_4_joined_data %>%
+  filter(!is.na(glucose_mg_dl)) %>% 
+  t.test(glucose_mg_dl~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
 
