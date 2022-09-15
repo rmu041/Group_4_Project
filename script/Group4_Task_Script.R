@@ -164,3 +164,23 @@ Outcome_hospital_dependence %>%
   broom::tidy()
 
 #The anova test yields a p-value of 0.298, which indicates that the outcome does not depend on hospital.
+
+
+# Does the outcome depend on BMI?
+# Performing a t-test
+Group_4_joined_data %>%
+  t.test(bmi~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
+# The p-value is 2.48e-18, so yes, the outcome depends on bmi. It is more likely to have diabetes after
+# 5 years with higher BMI
+
+# Making a boxplot to visualise the relationship between the outcome and BMI 
+diabetes_bmi_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = diabetes_5y_classifier, y = bmi) +
+  geom_boxplot() +
+  xlab("Diabetes after 5 years") +
+  ylab("BMI") +
+  labs(title = "Relationship between diabetes outcome and BMI",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+diabetes_bmi_plot 
