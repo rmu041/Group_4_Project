@@ -1,6 +1,3 @@
-
-<<<<<<< HEAD
-=======
 ## Creating a script for group 4 task ##
 
 ## Loading necessary packages ##
@@ -33,7 +30,6 @@ Group_4_data <-
 
 ##Change column names that contain spaces or start with numbers (or characters?)----
 Group_4_data <- 
-<<<<<<< HEAD
   Group_4_data %>% 
   rename(id = `subject`,
          insulin_microiu_ml = `insulin microiu ml`,
@@ -41,15 +37,6 @@ Group_4_data <-
          measured_variable = `measured variable`,
          value = `.value`
   )
-=======
-Group_4_data %>% 
-  rename(id = `subject`,
-    insulin_microiu_ml = `insulin microiu ml`,
-         diabetes_5y = `5y diabetes`,
-         measured_variable = `measured variable`,
-         value = `.value`
-         )
->>>>>>> 5e9f7a508ef54c3ee5f0b3dad523b851f20d8c8d
 
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
@@ -108,7 +95,8 @@ Group_4_joined_data %>%
 
 
 #Day 7----
-#Does the level of glucose and insulin depend on each other?
+##Glucose and insulin----
+##Does the level of glucose and insulin depend on each other?
 Glucose_insulin_plot <-
   ggplot(Group_4_joined_data) +
   aes(x = glucose_mg_dl,
@@ -122,7 +110,8 @@ Glucose_insulin_plot
 
 # The plot illustrates the relationship between plasma glucose concentration serum insulin at 2 hours after administration of an oral glucose tolerance test. Visually, there seems to appear a tendency toward a higher insulin level with higher glucose level. There are many missing values for insulin (375 out of 768), which could lead to a skewed outcome.
 
-#Does the level of glucose and insulin depend on each other, when stratifying by outcome (diabetes_5y)?
+##Stratify diabetes and check Glucose and insulin----
+##Does the level of glucose and insulin depend on each other, when stratifying by outcome (diabetes_5y)?
 Glucose_insulin_plot_stratified <-
   ggplot(Group_4_joined_data) +
   aes(x = glucose_mg_dl,
@@ -138,7 +127,8 @@ Glucose_insulin_plot_stratified
 #As without the stratification, there is a tendency to higher insulin with higher glucose. However, there are fewer observations for those with diabetes vs those without, which makes the results for those with diabetes less reliable.
 
 
-# Does the level of glucose and blood pressure depend on each other?
+## Glucose and blood pressure----
+## Does the level of glucose and blood pressure depend on each other?
 glucose_bp <-
   ggplot(Group_4_joined_data) +
   aes(x = glucose_mg_dl,
@@ -151,10 +141,57 @@ glucose_bp <-
 glucose_bp
 # Visually, it does not look like there is a relationship between level of glucose and blood pressure
 
+##BMI and triceps_mm values association----
+Group_4_joined_data %>% 
+  filter(triceps_mm < 90) %>% 
+  ggplot(aes(x = bmi,
+             y = triceps_mm)) +
+  geom_point() +
+  geom_smooth(method = lm,
+              se = T) +
+  labs(x = "bmi (kg/m2)",
+       y = "triceps (mm)",
+       title = "Relationship between bmi and triceps skin fold thickness") +
+  theme_minimal()
+
+##Distribution of blood pressure between BMI----
+##Is the blood pressure distribution different between these BMI categories?
+
+
 #Day 8 ----
 
 #The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection
 
+##Pedigree and outcome----
+##Does the outcome depend on the pedigree?
+
+
+
+
+##BMI and outcome----
+## Does the outcome depend on BMI?
+# Performing a t-test
+Group_4_joined_data %>%
+  t.test(bmi~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
+# The p-value is 2.48e-18, so yes, the outcome depends on bmi. It is more likely to have diabetes after
+# 5 years with higher BMI
+
+##Glucose_mg_dl and outcome----
+##Does the outcome depend on glucose_mg_dl?
+
+# Making a boxplot to visualise the relationship between the outcome and BMI 
+diabetes_bmi_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = diabetes_5y_classifier, y = bmi) +
+  geom_boxplot() +
+  xlab("Diabetes after 5 years") +
+  ylab("BMI") +
+  labs(title = "Relationship between diabetes outcome and BMI",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+diabetes_bmi_plot 
+
+##Hospital and outcome----
 #Does the outcome depend on hospital?
 
 Outcome_hospital_dependence <- 
@@ -167,22 +204,4 @@ Outcome_hospital_dependence %>%
 #The anova test yields a p-value of 0.298, which indicates that the outcome does not depend on hospital.
 
 
-# Does the outcome depend on BMI?
-# Performing a t-test
-Group_4_joined_data %>%
-  t.test(bmi~diabetes_5y_classifier, data = .) %>%
-  broom::tidy()
-# The p-value is 2.48e-18, so yes, the outcome depends on bmi. It is more likely to have diabetes after
-# 5 years with higher BMI
-
-# Making a boxplot to visualise the relationship between the outcome and BMI 
-diabetes_bmi_plot <-
-  ggplot(Group_4_joined_data) +
-  aes(x = diabetes_5y_classifier, y = bmi) +
-  geom_boxplot() +
-  xlab("Diabetes after 5 years") +
-  ylab("BMI") +
-  labs(title = "Relationship between diabetes outcome and BMI",
-       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
-diabetes_bmi_plot 
 
