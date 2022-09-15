@@ -149,3 +149,18 @@ glucose_bp <-
        caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
 glucose_bp
 # Visually, it does not look like there is a relationship between level of glucose and blood pressure
+
+#Day 8 ----
+
+#The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection
+
+#Does the outcome depend on hospital?
+
+Outcome_hospital_dependence <- 
+Group_4_joined_data %>% 
+  aov(diabetes_5y_classifier~hospital, data = .) 
+
+Outcome_hospital_dependence %>%
+  broom::tidy()
+
+#The anova test yields a p-value of 0.298, which indicates that the outcome does not depend on hospital.
