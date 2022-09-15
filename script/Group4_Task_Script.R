@@ -30,6 +30,16 @@ Group_4_data <-
   Group_4_data %>%
   distinct()
 
+##Change column names that contain spaces or start with numbers (or characters?)----
+Group_4_data <- 
+  Group_4_data %>% 
+  rename(id = `subject`,
+         insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5y = `5y diabetes`,
+         measured_variable = `measured variable`,
+         value = `.value`
+  )
+
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
   pivot_wider(names_from = "measured_variable",
@@ -49,16 +59,6 @@ Group_4_data <-
          age = as.numeric(age),
          id = as.numeric(id))
 
-##Change column names that contain spaces or start with numbers (or characters?)----
-Group_4_data <- 
-Group_4_data %>% 
-  rename(id = `subject`,
-    insulin_microiu_ml = `insulin microiu ml`,
-         diabetes_5y = `5y diabetes`,
-         measured_variable = `measured variable`,
-         value = `.value`
-         )
-
 ## Create set of columns for: glucose_mg_dl>120, insulin in units pmol/L ----
 ## diabetes_5y as 0/1, multiplication of age and pregnancy_num
 Group_4_data <-
@@ -71,7 +71,7 @@ Group_4_data <-
   arrange(id)
 
 ##Read,join additional dataset to your main dataset----
-Joining_data <- read_delim(here("data", "exam_joindata_copy_1.txt"), delim = "\t")
+Joining_data <- read_delim(here("data", "exam_joindata - copy.txt"), delim = "\t")
 
 ##Joining datasets----
 Group_4_joined_data <-
@@ -80,11 +80,11 @@ Group_4_joined_data <-
 
 
 ##Explore data again after adjustments ----
-summary(Group_4_data)
-glimpse(Group_4_data)
-skimr::skim(Group_4_data)
-naniar::gg_miss_var(Group_4_data)
-naniar::gg_miss_var(Group_4_data, facet = five_year_diabetes_classifier)
+summary(Group_4_joined_data)
+glimpse(Group_4_joined_data)
+skimr::skim(Group_4_joined_data)
+naniar::gg_miss_var(Group_4_joined_data)
+naniar::gg_miss_var(Group_4_joined_data, facet = diabetes_5y_classifier)
 
 ##Comment on missing data?----
 #PROVIDE ANSWER HERE
