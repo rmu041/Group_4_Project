@@ -341,7 +341,7 @@ Group_4_joined_data %>%
 \
 \
 
-### Does the outcome depend on BMI? Visualized in a box plot, and explored in a t-test.
+### Does the outcome depend on BMI? Explored in a t-test.
 \
  
 **T-test**
@@ -353,7 +353,7 @@ Group_4_joined_data %>%
 \
 *The p-value is 2.48e-18, so yes, the outcome depends on bmi. With higher bmi, it is more likely to develop diabetes within 5 years.*
 
-### Does the outcome depend on glucose_mg_dl? Visualized in a box plot, and explored in a t-test.
+### Does the outcome depend on glucose_mg_dl? Explored in a t-test.
 \
 **T-test**
 ```{r,echo=TRUE, eval=TRUE}
