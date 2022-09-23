@@ -191,7 +191,7 @@ ggplot(Group_4_joined_data) +
   aes(x = Bloodpressure_BMI,
       y = dbp_mm_hg
   ) +
-  geom_boxplot()
+  geom_boxplot() +
 ylab("bmi") +
   xlab("dbp_mm_hg") 
 
