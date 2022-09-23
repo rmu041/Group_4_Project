@@ -242,9 +242,11 @@ Group_4_joined_data %>%
 
 ##Glucose_mg_dl and outcome----
 ##Does the outcome depend on glucose_mg_dl?
+Group_4_joined_data %>%
+  t.test(glucose_mg_dl~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
 
-
-
+# The p-value is 2.84e-41 indicating that the outcome does in fact depend on glucose_mg_dl.
 
 ##Hospital and outcome----
 #Does the outcome depend on hospital?
