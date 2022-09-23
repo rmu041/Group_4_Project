@@ -1,0 +1,88 @@
+---
+title: "R_markdown_day_6"
+author: "Rammah Elnour"
+date: "22/09/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+**Day 6**
+
+```{r, echo=TRUE, eval=FALSE}
+#Working with Tidyverse to tidy, adjust, and explore the data set
+
+## Remove  columns from the dataframe: choleste, sibling ----
+Group_4_data <- 
+  Group_4_data %>% 
+  select(-c(sibling, choleste))
+
+## Change variable type ----
+Group_4_data <- 
+  Group_4_data %>%
+  mutate(pregnancy_num = as.numeric(pregnancy_num),
+         age = as.numeric(age),
+         id = as.numeric(id))
+
+## Create set of columns for: glucose_mg_dl>120, insulin in units pmol/L ----
+## diabetes_5y as 0/1, multiplication of age and pregnancy_num
+Group_4_data <-
+  Group_4_data %>% 
+  mutate(glucose_mg_dl_classifier = if_else(glucose_mg_dl >= 120, "High", "Low")) %>% 
+  mutate(insulin_microiu_pmol_l = insulin_microiu_ml*6.945) %>% 
+  mutate(diabetes_5y_classifier = if_else(diabetes_5y == "pos", "1","0")) %>% 
+  mutate(multiply_age_pregnancy = age*pregnancy_num) %>% 
+  select(id,hospital,age,everything()) %>% 
+  arrange(id)
+
+##Read and join additional dataset to your main dataset----
+Joining_data <- read_delim(here("data", "exam_joindata - copy.txt"), delim = "\t")
+
+##Join datasets----
+Group_4_joined_data <-
+  Group_4_data %>%
+  left_join(Joining_data, by = "id")
+
+
+##Explore data again after adjustments ----
+summary(Group_4_joined_data)
+glimpse(Group_4_joined_data)
+skimr::skim(Group_4_joined_data)
+naniar::gg_miss_var(Group_4_joined_data)
+naniar::gg_miss_var(Group_4_joined_data, facet = glucose_mg_dl_classifier)
+
+##Comment on missing data?----
+#the analysis of missing data shows that the antibody, serum insulin, and triceps measurements are missing the most values. 
+
+#when stratifying for diabetes it would appear that these measurements are missing mainly for people that were not diagnosed with diabetes in the following 5 years this makes sense as diagnosis of diabetes would result in further testing and more measurements including insulin and subcutaneous fat and therefore less missing values.
+
+#similarly when stratifying for high and low glucose values, the most missing values exist for the people with low glucose values, as they probably do not need to get tested as much for insulin and subcutaneous fat. 
+
+
+##Stratify data by BMI and report: min,max,mean,sd----
+Group_4_joined_data %>% 
+  group_by(glucose_mg_dl_classifier) %>% 
+  summarise(max(bmi, na.rm = T), min(bmi, na.rm = T), mean(bmi, na.rm = T), 
+            sd(bmi, na.rm = T))
+
+##Stratify data by specific categorical column: min,max,mean,sd----
+
+Group_4_joined_data %>% 
+  group_by(glucose_mg_dl_classifier) %>% 
+  filter(diabetes_5y == "pos") %>% 
+  filter(hospital == "Hosp1") %>% 
+  filter(pregnancy_num > 2) %>% 
+  filter(glucose_mg_dl < 120 & glucose_mg_dl > 60) %>% 
+  summarise(max(dbp_mm_hg, na.rm = T), min(dbp_mm_hg, na.rm = T), mean(dbp_mm_hg, na.rm = T), 
+            sd(dbp_mm_hg, na.rm = T))
+  
+```
+
