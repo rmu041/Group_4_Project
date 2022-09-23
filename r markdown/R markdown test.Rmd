@@ -1,7 +1,7 @@
 ---
-title: "R_markdown_day_6"
-author: "Rammah Elnour"
-date: "22/09/2022"
+title: GROUP 4 Markdown report
+author: Group 4
+date: "23/09/2022"
 output: html_document
 ---
 
@@ -9,11 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This report includes the work of Group 4. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Describing the dataset
+We were provided with a datset collected with funding from the National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK). The dataset includes females from 21 years of age, and of Pima Indian heritage, with at least 5 years of followup in a longitudinal study of diabetes.
+
+We were given specific assignments regarding reading, tidying, exploring and analyzing the provided dataset. The report is organized chronologically as the assigments were given.
+
 
 **Day 5**
 
