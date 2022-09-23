@@ -44,13 +44,14 @@ Group_4_data <- Group_4_data %>%
               values_from = "value")
 
 #Day 6----
+#Working with Tidyverse to tidy, adjust, and explore the data set
 
-## Remove  columns from your dataframe: choleste, sibling ----
+## Remove  columns from the dataframe: choleste, sibling ----
 Group_4_data <- 
   Group_4_data %>% 
   select(-c(sibling, choleste))
 
-## Variable type changes ----
+## Change variable type ----
 Group_4_data <- 
   Group_4_data %>%
   mutate(pregnancy_num = as.numeric(pregnancy_num),
@@ -68,10 +69,10 @@ Group_4_data <-
   select(id,hospital,age,everything()) %>% 
   arrange(id)
 
-##Read,join additional dataset to your main dataset----
+##Read and join additional dataset to your main dataset----
 Joining_data <- read_delim(here("data", "exam_joindata - copy.txt"), delim = "\t")
 
-##Joining datasets----
+##Join datasets----
 Group_4_joined_data <-
   Group_4_data %>%
   left_join(Joining_data, by = "id")
@@ -82,17 +83,33 @@ summary(Group_4_joined_data)
 glimpse(Group_4_joined_data)
 skimr::skim(Group_4_joined_data)
 naniar::gg_miss_var(Group_4_joined_data)
-naniar::gg_miss_var(Group_4_joined_data, facet = diabetes_5y_classifier)
+naniar::gg_miss_var(Group_4_joined_data, facet = glucose_mg_dl_classifier)
 
 ##Comment on missing data?----
-#PROVIDE ANSWER HERE
+#the analysis of missing data shows that the antibody, serum insulin, and triceps measurements are missing the most values. 
 
-##Stratify data by categorical column: min,max,mean,sd----
+#when stratifying for diabetes it would appear that these measurements are missing mainly for people that were not diagnosed with diabetes in the following 5 years this makes sense as diagnosis of diabetes would result in further testing and more measurements including insulin and subcutaneous fat and therefore less missing values.
+
+#similarly when stratifying for high and low glucose values, the most missing values exist for the people with low glucose values, as they probably do not need to get tested as much for insulin and subcutaneous fat. 
+
+
+##Stratify data by BMI and report: min,max,mean,sd----
 Group_4_joined_data %>% 
   group_by(glucose_mg_dl_classifier) %>% 
-  summarise(max(bmi, na.rm = T), min(bmi, na.rm = T), mean(bmi, na.rm = T), sd(bmi, na.rm = T))
+  summarise(max(bmi, na.rm = T), min(bmi, na.rm = T), mean(bmi, na.rm = T), 
+            sd(bmi, na.rm = T))
 
+##Stratify data by specific categorical column: min,max,mean,sd----
 
+Group_4_joined_data %>% 
+  group_by(glucose_mg_dl_classifier) %>% 
+  filter(diabetes_5y == "pos") %>% 
+  filter(hospital == "Hosp1") %>% 
+  filter(pregnancy_num > 2) %>% 
+  filter(glucose_mg_dl < 120 & glucose_mg_dl > 60) %>% 
+  summarise(max(dbp_mm_hg, na.rm = T), min(dbp_mm_hg, na.rm = T), mean(dbp_mm_hg, na.rm = T), 
+            sd(dbp_mm_hg, na.rm = T))
+  
 
 #Day 7----
 ##Glucose and insulin----
@@ -124,6 +141,7 @@ Glucose_insulin_plot_stratified <-
   labs(title = "Glucose and insulin at 2 hours",
        caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
 Glucose_insulin_plot_stratified
+
 #As without the stratification, there is a tendency to higher insulin with higher glucose. However, there are fewer observations for those with diabetes vs those without, which makes the results for those with diabetes less reliable.
 
 
@@ -142,7 +160,7 @@ glucose_bp
 # Visually, it does not look like there is a relationship between level of glucose and blood pressure
 
 ##BMI and triceps_mm values association----
-Group_4_joined_data %>% 
+bmi_triceps_plot <- Group_4_joined_data %>% 
   filter(triceps_mm < 90) %>% 
   ggplot(aes(x = bmi,
              y = triceps_mm)) +
@@ -153,6 +171,11 @@ Group_4_joined_data %>%
        y = "triceps (mm)",
        title = "Relationship between bmi and triceps skin fold thickness") +
   theme_minimal()
+bmi_triceps_plot
+
+#This plot demonstrates that there appears to be a correlation between BMI and
+#subcutaneous fat, as measured by triceps skin fold thickness. 
+
 
 ##Distribution of blood pressure between BMI----
 ##Is the blood pressure distribution different between these BMI categories?
@@ -163,19 +186,33 @@ Group_4_joined_data %>%
 #The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection
 
 ##Pedigree and outcome----
-##Does the outcome depend on the pedigree?
-
-
-
+# Does the outcome depend on pedigree?
+# Performing a t-test
+Group_4_joined_data %>%
+  t.test(pedigree~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
+# The p-value is 0.00006, so the outcome depends on pedigree. With higher pedigree score,
+# it is more likely to develop diabetes within 5 years
 
 ##BMI and outcome----
 ## Does the outcome depend on BMI?
+# Making a boxplot to visualise the relationship between the outcome and BMI 
+diabetes_pedigree_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = diabetes_5y_classifier, y = pedigree) +
+  geom_boxplot() +
+  xlab("Diabetes after 5 years") +
+  ylab("Pedigree") +
+  labs(title = "Relationship between diabetes outcome and pedigree score",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+diabetes_pedigree_plot  
+
 # Performing a t-test
 Group_4_joined_data %>%
   t.test(bmi~diabetes_5y_classifier, data = .) %>%
   broom::tidy()
-# The p-value is 2.48e-18, so yes, the outcome depends on bmi. It is more likely to have diabetes after
-# 5 years with higher BMI
+# The p-value is 2.48e-18, so yes, the outcome depends on bmi. With higher bmi,
+# it is more likely to develop diabetes within 5 years
 
 ##Glucose_mg_dl and outcome----
 ##Does the outcome depend on glucose_mg_dl?
