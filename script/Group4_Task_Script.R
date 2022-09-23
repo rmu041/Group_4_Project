@@ -179,6 +179,21 @@ bmi_triceps_plot
 
 ##Distribution of blood pressure between BMI----
 ##Is the blood pressure distribution different between these BMI categories?
+Bloodpressure_BMI <- vector(mode ="character", length(Group_4_joined_data$bmi))
+Bloodpressure_BMI[Group_4_joined_data$bmi<25] <- "BMI < 25"
+Bloodpressure_BMI[Group_4_joined_data$bmi >= 25 &
+                    Group_4_joined_data$bmi < 30] <- "25 <= BMI < 30"
+Bloodpressure_BMI[Group_4_joined_data$bmi>=30] <- "30 <= BMI"
+
+Group_4_joined_data$Bloodpressure_BMI <- Bloodpressure_BMI
+
+ggplot(Group_4_joined_data) +
+  aes(x = Bloodpressure_BMI,
+      y = dbp_mm_hg
+  ) +
+  geom_boxplot()
+ylab("bmi") +
+  xlab("dbp_mm_hg") 
 
 
 #Day 8 ----
