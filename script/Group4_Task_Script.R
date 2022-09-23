@@ -229,7 +229,7 @@ Group_4_joined_data %>%
 ##Does the outcome depend on glucose_mg_dl?
 
 
-s
+
 
 ##Hospital and outcome----
 #Does the outcome depend on hospital?
