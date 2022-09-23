@@ -17,7 +17,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
 **Day 5**
 
-```{r}
+```{r, echo=TRUE, eval=TRUE}
 ## Creating a script for group 4 task ##
 
 ## Loading necessary packages ##
@@ -67,7 +67,7 @@ Group_4_data <- Group_4_data %>%
 
 **Day 6**
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE, eval=TRUE}
 #Working with Tidyverse to tidy, adjust, and explore the data set
 
 ## Remove  columns from the dataframe: choleste, sibling ----
@@ -138,7 +138,7 @@ Group_4_joined_data %>%
 
 **Day 7**
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE, eval=TRUE}
 ##Glucose and insulin----
 ##Does the level of glucose and insulin depend on each other?
 Glucose_insulin_plot <-
@@ -218,7 +218,7 @@ ggplot(Group_4_joined_data) +
   aes(x = Bloodpressure_BMI,
       y = dbp_mm_hg
   ) +
-  geom_boxplot()
+  geom_boxplot() +
 ylab("bmi") +
   xlab("dbp_mm_hg") 
 
