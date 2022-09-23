@@ -86,3 +86,91 @@ Group_4_joined_data %>%
   
 ```
 
+**Day 7**
+
+```{r, echo=TRUE, eval=FALSE}
+##Glucose and insulin----
+##Does the level of glucose and insulin depend on each other?
+Glucose_insulin_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = insulin_microiu_pmol_l) +
+  geom_point() +
+  xlab("Glucose level (mg/dL)") +
+  ylab("Insulin microIU/mL") +
+  labs(title = "Glucose and insulin at 2 hours",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+Glucose_insulin_plot
+
+# The plot illustrates the relationship between plasma glucose concentration serum insulin at 2 hours after administration of an oral glucose tolerance test. Visually, there seems to appear a tendency toward a higher insulin level with higher glucose level. There are many missing values for insulin (375 out of 768), which could lead to a skewed outcome.
+
+##Stratify diabetes and check Glucose and insulin----
+##Does the level of glucose and insulin depend on each other, when stratifying by outcome (diabetes_5y)?
+Glucose_insulin_plot_stratified <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = insulin_microiu_pmol_l) +
+  geom_point() +
+  facet_wrap(facets = vars(diabetes_5y_classifier)) +
+  geom_smooth(method = "lm") +
+  xlab("Glucose level (mg/dL)") +
+  ylab("Insulin microIU/mL") +
+  labs(title = "Glucose and insulin at 2 hours",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+Glucose_insulin_plot_stratified
+
+#As without the stratification, there is a tendency to higher insulin with higher glucose. However, there are fewer observations for those with diabetes vs those without, which makes the results for those with diabetes less reliable.
+
+
+## Glucose and blood pressure----
+## Does the level of glucose and blood pressure depend on each other?
+glucose_bp <-
+  ggplot(Group_4_joined_data) +
+  aes(x = glucose_mg_dl,
+      y = dbp_mm_hg) +
+  geom_point() +
+  xlab("Glucose level (mg/dl)") +
+  ylab("Blood pressure (mm/hg)") +
+  labs(title = "Relationship between glucose level and blood pressure",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+glucose_bp
+# Visually, it does not look like there is a relationship between level of glucose and blood pressure
+
+##BMI and triceps_mm values association----
+bmi_triceps_plot <- Group_4_joined_data %>% 
+  filter(triceps_mm < 90) %>% 
+  ggplot(aes(x = bmi,
+             y = triceps_mm)) +
+  geom_point() +
+  geom_smooth(method = lm,
+              se = T) +
+  labs(x = "bmi (kg/m2)",
+       y = "triceps (mm)",
+       title = "Relationship between bmi and triceps skin fold thickness") +
+  theme_minimal()
+bmi_triceps_plot
+
+#This plot demonstrates that there appears to be a correlation between BMI and
+#subcutaneous fat, as measured by triceps skin fold thickness. 
+
+
+##Distribution of blood pressure between BMI----
+##Is the blood pressure distribution different between these BMI categories?
+Bloodpressure_BMI <- vector(mode ="character", length(Group_4_joined_data$bmi))
+Bloodpressure_BMI[Group_4_joined_data$bmi<25] <- "BMI < 25"
+Bloodpressure_BMI[Group_4_joined_data$bmi >= 25 &
+                    Group_4_joined_data$bmi < 30] <- "25 <= BMI < 30"
+Bloodpressure_BMI[Group_4_joined_data$bmi>=30] <- "30 <= BMI"
+
+Group_4_joined_data$Bloodpressure_BMI <- Bloodpressure_BMI
+
+ggplot(Group_4_joined_data) +
+  aes(x = Bloodpressure_BMI,
+      y = dbp_mm_hg
+  ) +
+  geom_boxplot()
+ylab("bmi") +
+  xlab("dbp_mm_hg") 
+
+```
+
