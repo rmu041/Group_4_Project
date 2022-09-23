@@ -15,6 +15,56 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
+**Day 5**
+
+```{r}
+## Creating a script for group 4 task ##
+
+## Loading necessary packages ##
+library(tidyverse)
+library(here)
+
+#Day 5----
+
+##Loading data----
+Group_4_data <- read_delim(here("data", "exam_nontidy - copy.txt"), delim = "\t")
+
+##Separate columns----
+Group_4_data <- 
+  Group_4_data %>%
+  separate(col = `pregnancy_num-age`,
+           into = c("pregnancy_num", "age"),
+           sep = "-")
+
+##separate hospital and subject
+Group_4_data <- 
+  Group_4_data %>%
+  separate(col = subject,
+           into = c("hospital", "subject"),
+           sep = "-")
+
+## Removing duplicates----
+Group_4_data <-
+  Group_4_data %>%
+  distinct()
+
+##Change column names that contain spaces or start with numbers (or characters?)----
+Group_4_data <- 
+  Group_4_data %>% 
+  rename(id = `subject`,
+         insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5y = `5y diabetes`,
+         measured_variable = `measured variable`,
+         value = `.value`
+  )
+
+## Pivoting columns with values from various measurements----
+Group_4_data <- Group_4_data %>% 
+  pivot_wider(names_from = "measured_variable",
+              values_from = "value")
+```
+
+
 **Day 6**
 
 ```{r, echo=TRUE, eval=FALSE}
