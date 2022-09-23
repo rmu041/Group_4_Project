@@ -18,21 +18,29 @@ We were provided with a datset collected with funding from the National Institut
 
 We were given specific assignments regarding reading, tidying, exploring and analyzing the provided dataset. The report is organized chronologically as the assigments were given.
 
-
-**Day 5**
+### Loading necessary packages for the given tasks
 
 ```{r, echo=TRUE, eval=TRUE}
-## Creating a script for group 4 task ##
-
-## Loading necessary packages ##
 library(tidyverse)
 library(here)
+library(ggplot2)
+```
+\
 
-#Day 5----
+## Day 5
+The primary object is to read the dataset into R software and tidy the data using the tidyverse package
+\
 
-##Loading data----
-Group_4_data <- read_delim(here("data", "exam_nontidy - copy.txt"), delim = "\t")
+### Reading the data into R program
+```{r, echo=TRUE, eval=TRUE}
+  Group_4_data <- read_delim(here("data", "exam_nontidy - copy.txt"), delim = "\t")
 
+```
+\
+
+### Seperating columns that contain multiple variables in column cells
+
+```{r, echo=TRUE, eval=TRUE}
 ##Separate columns----
 Group_4_data <- 
   Group_4_data %>%
@@ -46,12 +54,22 @@ Group_4_data <-
   separate(col = subject,
            into = c("hospital", "subject"),
            sep = "-")
+```
+\
 
+### Removing duplicate values from columns
+
+```{r, echo=TRUE, eval=TRUE}
 ## Removing duplicates----
 Group_4_data <-
   Group_4_data %>%
   distinct()
+```
+\
 
+### Changing column names 
+
+```{r, echo=TRUE, eval=TRUE}
 ##Change column names that contain spaces or start with numbers (or characters?)----
 Group_4_data <- 
   Group_4_data %>% 
@@ -61,16 +79,24 @@ Group_4_data <-
          measured_variable = `measured variable`,
          value = `.value`
   )
+```
+\
 
+### Applying pivot to create new columns for distinct measurement types
+
+```{r, echo=TRUE, eval=TRUE}
 ## Pivoting columns with values from various measurements----
 Group_4_data <- Group_4_data %>% 
   pivot_wider(names_from = "measured_variable",
               values_from = "value")
 ```
+\
 
+## Day 6
+The primary object is to further tidy the data, adjust it in preparation for analysis, and explore the data after making the necessary adjustments.
+\
 
-**Day 6**
-
+### Removing variables that are not necessary for downstream analysis
 ```{r, echo=TRUE, eval=TRUE}
 #Working with Tidyverse to tidy, adjust, and explore the data set
 
@@ -78,14 +104,24 @@ Group_4_data <- Group_4_data %>%
 Group_4_data <- 
   Group_4_data %>% 
   select(-c(sibling, choleste))
+```
+\
 
+### Adjusting values listed as categorical to numerical
+
+```{r, echo=TRUE, eval=TRUE}
 ## Change variable type ----
 Group_4_data <- 
   Group_4_data %>%
   mutate(pregnancy_num = as.numeric(pregnancy_num),
          age = as.numeric(age),
          id = as.numeric(id))
+```
+\
 
+### Creating new columns including glucose classifier (high/low), diabetes classifiers (1/0), and glucose measurement in pmol/L, setting a specific order for the columns and arranging by increasing ID number.  
+
+```{r, echo=TRUE, eval=TRUE}
 ## Create set of columns for: glucose_mg_dl>120, insulin in units pmol/L ----
 ## diabetes_5y as 0/1, multiplication of age and pregnancy_num
 Group_4_data <-
@@ -96,7 +132,12 @@ Group_4_data <-
   mutate(multiply_age_pregnancy = age*pregnancy_num) %>% 
   select(id,hospital,age,everything()) %>% 
   arrange(id)
+```
+\
 
+### Joining an additional dataset containing information about antibody measurements to the main dataset
+
+```{r, echo=TRUE, eval=TRUE}
 ##Read and join additional dataset to your main dataset----
 Joining_data <- read_delim(here("data", "exam_joindata - copy.txt"), delim = "\t")
 
@@ -104,29 +145,40 @@ Joining_data <- read_delim(here("data", "exam_joindata - copy.txt"), delim = "\t
 Group_4_joined_data <-
   Group_4_data %>%
   left_join(Joining_data, by = "id")
+```
+\
 
+### Exploring the dataset after the making the above changes 
 
+```{r, echo=TRUE, eval=TRUE}
 ##Explore data again after adjustments ----
 summary(Group_4_joined_data)
 glimpse(Group_4_joined_data)
 skimr::skim(Group_4_joined_data)
 naniar::gg_miss_var(Group_4_joined_data)
 naniar::gg_miss_var(Group_4_joined_data, facet = glucose_mg_dl_classifier)
+```
+\
 
-##Comment on missing data?----
-#the analysis of missing data shows that the antibody, serum insulin, and triceps measurements are missing the most values. 
+#### Commenting on the missing values in the data set
+The analysis of missing data shows that the antibody, serum insulin, and triceps measurements are missing the most values. When stratifying for diabetes it would appear that these measurements are missing mainly for people that were not diagnosed with diabetes in the following 5 years this makes sense as diagnosis of diabetes would result in further testing and more measurements including insulin and subcutaneous fat and therefore less missing values. Similarly when stratifying for high and low glucose values, the most missing values exist for the people with low glucose values, as they probably do not need to get tested as much for insulin and subcutaneous fat.
 
-#when stratifying for diabetes it would appear that these measurements are missing mainly for people that were not diagnosed with diabetes in the following 5 years this makes sense as diagnosis of diabetes would result in further testing and more measurements including insulin and subcutaneous fat and therefore less missing values.
+\
 
-#similarly when stratifying for high and low glucose values, the most missing values exist for the people with low glucose values, as they probably do not need to get tested as much for insulin and subcutaneous fat. 
+### Stratifying data by a categorical column 
 
-
+```{r, echo=TRUE, eval=TRUE}
 ##Stratify data by BMI and report: min,max,mean,sd----
 Group_4_joined_data %>% 
   group_by(glucose_mg_dl_classifier) %>% 
   summarise(max(bmi, na.rm = T), min(bmi, na.rm = T), mean(bmi, na.rm = T), 
             sd(bmi, na.rm = T))
+```
+\
 
+### Stratifying data by a categorical column and reporting for a defined set of observations
+
+```{r, echo=TRUE, eval=TRUE}
 ##Stratify data by specific categorical column: min,max,mean,sd----
 
 Group_4_joined_data %>% 
@@ -137,10 +189,13 @@ Group_4_joined_data %>%
   filter(glucose_mg_dl < 120 & glucose_mg_dl > 60) %>% 
   summarise(max(dbp_mm_hg, na.rm = T), min(dbp_mm_hg, na.rm = T), mean(dbp_mm_hg, na.rm = T), 
             sd(dbp_mm_hg, na.rm = T))
-  
 ```
+\
 
-**Day 7**
+## Day 7
+The primary objective is to use the ggplot2 packages to create plots that can be used to answer questions about correlations within the dataset
+
+### Investigating associations between glucose levels and insulin
 
 ```{r, echo=TRUE, eval=TRUE}
 ##Glucose and insulin----
@@ -155,9 +210,16 @@ Glucose_insulin_plot <-
   labs(title = "Glucose and insulin at 2 hours",
        caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
 Glucose_insulin_plot
+```
+\
 
-# The plot illustrates the relationship between plasma glucose concentration serum insulin at 2 hours after administration of an oral glucose tolerance test. Visually, there seems to appear a tendency toward a higher insulin level with higher glucose level. There are many missing values for insulin (375 out of 768), which could lead to a skewed outcome.
+#### Commenting on plot between glucose levels and insulin
+The plot illustrates the relationship between plasma glucose concentration serum insulin at 2 hours after administration of an oral glucose tolerance test. Visually, there seems to appear a tendency toward a higher insulin level with higher glucose level. There are many missing values for insulin (375 out of 768), which could lead to a skewed outcome.
+\
 
+### Investigating associations between glucose levels and insulin, when stratifying by diabetes outcome
+
+```{r, echo=TRUE, eval=TRUE}
 ##Stratify diabetes and check Glucose and insulin----
 ##Does the level of glucose and insulin depend on each other, when stratifying by outcome (diabetes_5y)?
 Glucose_insulin_plot_stratified <-
@@ -172,10 +234,16 @@ Glucose_insulin_plot_stratified <-
   labs(title = "Glucose and insulin at 2 hours",
        caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
 Glucose_insulin_plot_stratified
+```
+\
 
-#As without the stratification, there is a tendency to higher insulin with higher glucose. However, there are fewer observations for those with diabetes vs those without, which makes the results for those with diabetes less reliable.
+#### Commenting on plot between glucose levels and insulin, after stratifying by diabetes outcome
+As without the stratification, there is a tendency to higher insulin with higher glucose. However, there are fewer observations for those with diabetes vs those without, which makes the results for those with diabetes less reliable.
+\
 
+### Investigating associations between glucose levels and blood pressure
 
+```{r, echo=TRUE, eval=TRUE}
 ## Glucose and blood pressure----
 ## Does the level of glucose and blood pressure depend on each other?
 glucose_bp <-
@@ -188,8 +256,16 @@ glucose_bp <-
   labs(title = "Relationship between glucose level and blood pressure",
        caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
 glucose_bp
-# Visually, it does not look like there is a relationship between level of glucose and blood pressure
+```
+\
 
+#### Commenting on plot between glucose levels and blood pressure
+Visually, it does not look like there is a relationship between level of glucose and blood pressure
+\
+
+### Investigating associations between bmi and subcutaneous fat
+
+```{r, echo=TRUE, eval=TRUE}
 ##BMI and triceps_mm values association----
 bmi_triceps_plot <- Group_4_joined_data %>% 
   filter(triceps_mm < 90) %>% 
@@ -203,11 +279,15 @@ bmi_triceps_plot <- Group_4_joined_data %>%
        title = "Relationship between bmi and triceps skin fold thickness") +
   theme_minimal()
 bmi_triceps_plot
+```
+\
 
-#This plot demonstrates that there appears to be a correlation between BMI and
-#subcutaneous fat, as measured by triceps skin fold thickness. 
+#### Commenting on plot between glucose levels and blood pressure
+This plot demonstrates that there appears to be a correlation between BMI and subcutaneous fat, as measured by triceps skin fold thickness. 
 
+### Investigating whether blood pressure is different when comparing different BMI ranges
 
+```{r, echo=TRUE, eval=TRUE}
 ##Distribution of blood pressure between BMI----
 ##Is the blood pressure distribution different between these BMI categories?
 Bloodpressure_BMI <- vector(mode ="character", length(Group_4_joined_data$bmi))
@@ -225,16 +305,19 @@ ggplot(Group_4_joined_data) +
   geom_boxplot() +
 ylab("bmi") +
   xlab("dbp_mm_hg") 
-
-#Blood pressure is progressively higher in the different BMI categories, the lowest blood pressure in the BMI<25 group, followed by slightly higher in 25 <= BMI < 30, and the highest in BMI <= 30.
-
 ```
-### Day 8
-The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection.In this final section, we have explored several possible correlations within the dataset.  
 \
 
-#### Does the outcome depend on hospital? Explored by performing an anova test.
+#### Commenting on plot between blood pressure within different BMI categories
+Blood pressure is progressively higher in the different BMI categories, the lowest blood pressure in the BMI<25 group, followed by slightly higher in 25 <= BMI < 30, and the highest in BMI <= 30.
 
+
+### Day 8
+The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection.In this final section, we have explored several possible correlations within the dataset. 
+\
+
+### Does the outcome depend on hospital? Explored by performing an anova test.
+**ANOVA**
 ```{r, echo=TRUE, eval=TRUE}
   Group_4_joined_data %>% 
   aov(diabetes_5y_classifier~hospital, data = .) %>%
@@ -245,8 +328,9 @@ The primary analysis task is to classify in each participant whether diabetes de
 \
 \
 
-#### Does the outcome depend on pedigree? Explored by performing a t-test.
+### Does the outcome depend on pedigree? Explored by performing a t-test.
 
+**T-test**
 ```{r, echo=TRUE, eval=TRUE}
 Group_4_joined_data %>%
   t.test(pedigree~diabetes_5y_classifier, data = .) %>%
@@ -257,21 +341,9 @@ Group_4_joined_data %>%
 \
 \
 
-#### Does the outcome depend on BMI? Visualized in a box plot, and explored in a t-test.
+### Does the outcome depend on BMI? Visualized in a box plot, and explored in a t-test.
 \
-**Box plot**  
-```{r, echo=TRUE, eval=TRUE}
-diabetes_pedigree_plot <-
-  ggplot(Group_4_joined_data) +
-  aes(x = diabetes_5y_classifier, y = pedigree) +
-  geom_boxplot() +
-  xlab("Diabetes after 5 years") +
-  ylab("Pedigree") +
-  labs(title = "Relationship between diabetes outcome and pedigree score",
-       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
-diabetes_pedigree_plot  
-```
-\
+ 
 **T-test**
 ```{r,echo=TRUE, eval=TRUE}
 Group_4_joined_data %>%
@@ -280,3 +352,14 @@ Group_4_joined_data %>%
 ```
 \
 *The p-value is 2.48e-18, so yes, the outcome depends on bmi. With higher bmi, it is more likely to develop diabetes within 5 years.*
+
+### Does the outcome depend on glucose_mg_dl? Visualized in a box plot, and explored in a t-test.
+\
+**T-test**
+```{r,echo=TRUE, eval=TRUE}
+Group_4_joined_data %>%
+  t.test(glucose_mg_dl~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
+```
+\
+*The p-value is 2.84e-41 indicating that the outcome does in fact depend on glucose_mg_dl.*
