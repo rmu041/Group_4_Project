@@ -179,6 +179,21 @@ bmi_triceps_plot
 
 ##Distribution of blood pressure between BMI----
 ##Is the blood pressure distribution different between these BMI categories?
+Bloodpressure_BMI <- vector(mode ="character", length(Group_4_joined_data$bmi))
+Bloodpressure_BMI[Group_4_joined_data$bmi<25] <- "BMI < 25"
+Bloodpressure_BMI[Group_4_joined_data$bmi >= 25 &
+                    Group_4_joined_data$bmi < 30] <- "25 <= BMI < 30"
+Bloodpressure_BMI[Group_4_joined_data$bmi>=30] <- "30 <= BMI"
+
+Group_4_joined_data$Bloodpressure_BMI <- Bloodpressure_BMI
+
+ggplot(Group_4_joined_data) +
+  aes(x = Bloodpressure_BMI,
+      y = dbp_mm_hg
+  ) +
+  geom_boxplot() +
+  ylab("bmi") +
+  xlab("dbp_mm_hg") 
 
 
 #Day 8 ----
@@ -186,17 +201,8 @@ bmi_triceps_plot
 #The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection
 
 ##Pedigree and outcome----
-# Does the outcome depend on pedigree?
-# Performing a t-test
-Group_4_joined_data %>%
-  t.test(pedigree~diabetes_5y_classifier, data = .) %>%
-  broom::tidy()
-# The p-value is 0.00006, so the outcome depends on pedigree. With higher pedigree score,
-# it is more likely to develop diabetes within 5 years
-
-##BMI and outcome----
-## Does the outcome depend on BMI?
-# Making a boxplot to visualise the relationship between the outcome and BMI 
+#Does the outcome depend on pedigree?
+#making a box plot to visualize the association and investigate whether diabetes outcome depends on pedigree
 diabetes_pedigree_plot <-
   ggplot(Group_4_joined_data) +
   aes(x = diabetes_5y_classifier, y = pedigree) +
@@ -205,9 +211,29 @@ diabetes_pedigree_plot <-
   ylab("Pedigree") +
   labs(title = "Relationship between diabetes outcome and pedigree score",
        caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
-diabetes_pedigree_plot  
+diabetes_pedigree_plot
 
-# Performing a t-test
+# Performing a t-test to check if there is a significant association between diabetes outcomes and pedigree
+Group_4_joined_data %>%
+  t.test(pedigree~diabetes_5y_classifier, data = .) %>%
+  broom::tidy()
+# The p-value is 0.00006, so the outcome depends on pedigree. With higher pedigree score,
+# it is more likely to develop diabetes within 5 years
+
+##BMI and outcome----
+## Does the outcome depend on BMI?
+# Making a boxplot to visualise the association between diabetes outcome and BMI 
+diabetes_bmi_plot <-
+  ggplot(Group_4_joined_data) +
+  aes(x = diabetes_5y_classifier, y = bmi) +
+  geom_boxplot() +
+  xlab("Diabetes after 5 years") +
+  ylab("BMI") +
+  labs(title = "Relationship between diabetes outcome and bmi",
+       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
+diabetes_bmi_plot 
+
+# Performing a t-test to check if there is a significant association between diabetes outcomes and bmi
 Group_4_joined_data %>%
   t.test(bmi~diabetes_5y_classifier, data = .) %>%
   broom::tidy()
@@ -217,19 +243,12 @@ Group_4_joined_data %>%
 ##Glucose_mg_dl and outcome----
 ##Does the outcome depend on glucose_mg_dl?
 
-# Making a boxplot to visualise the relationship between the outcome and BMI 
-diabetes_bmi_plot <-
-  ggplot(Group_4_joined_data) +
-  aes(x = diabetes_5y_classifier, y = bmi) +
-  geom_boxplot() +
-  xlab("Diabetes after 5 years") +
-  ylab("BMI") +
-  labs(title = "Relationship between diabetes outcome and BMI",
-       caption = "data source: Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK")
-diabetes_bmi_plot 
+
+
 
 ##Hospital and outcome----
 #Does the outcome depend on hospital?
+#Performing ANOVA test to check if there is a significant association between diabetes outcomes and hospital
 
 Outcome_hospital_dependence <- 
   Group_4_joined_data %>% 
