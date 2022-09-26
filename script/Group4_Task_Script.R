@@ -261,5 +261,5 @@ Outcome_hospital_dependence %>%
 
 #The anova test yields a p-value of 0.298, which indicates that the outcome does not depend on hospital.
 
-
+#End
 
