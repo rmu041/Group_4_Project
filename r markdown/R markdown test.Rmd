@@ -363,3 +363,4 @@ Group_4_joined_data %>%
 ```
 \
 *The p-value is 2.84e-41 indicating that the outcome does in fact depend on glucose_mg_dl.*
+
